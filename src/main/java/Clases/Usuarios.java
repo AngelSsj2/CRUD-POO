@@ -24,13 +24,19 @@ import javax.xml.transform.Result;
  * @author angel
  */
 public class Usuarios {
-    
+
+    //Metodo que muestra los sexos disponibñes en el combobox desde la base de la base datos
     public void MostrarSexo(ComboBox<String> comboSexo){
         Clases.Conexion objetoConexion = new Clases.Conexion();
+        //Limpiar el combobox
         comboSexo.getItems().clear();
+        //Seleccionar el Sexo
         comboSexo.setValue("Seleccione Sexo: ");
-        
+
+        //Consulta para obtener los Sexos
         String sql = "select * from sexo;";
+
+
         
         try {
             Statement st = objetoConexion.establecerConexion().createStatement();
@@ -38,10 +44,14 @@ public class Usuarios {
             ResultSet rs = st.executeQuery(sql);
             
             while (rs.next()) {
+                //ID sexo
                 int idSexo = rs.getInt("id");
+                //Nombre del sexo
                 String nombreSexo = rs.getString("sexo");
-                
+
+                //Agrega el nombre al combobox
                 comboSexo.getItems().add(nombreSexo);
+                // Guarda el ID como propiedad
                 comboSexo.getProperties().put(nombreSexo, idSexo);
                 
             }
@@ -55,13 +65,14 @@ public class Usuarios {
         
     }
     
-    //Agregar los usuarios desde JavaFX y se agreguen al SQL
+    //Agregar los usuarios desde la interfaz JavaFX y se agreguen al base de datos SQL
     public void AgregarUsuarios(TextField nombres, TextField apellidos, TextField correo, DatePicker nacimiento, ComboBox<String> comboSexo){
         Conexion objetoConexion = new Conexion();
         
         String consulta = "INSERT INTO usuarios (nombre, apellidos, fkSexo, fechaNac, correo) VALUES (?,?,?,?,?);";
         try (CallableStatement cs = objetoConexion.establecerConexion().prepareCall(consulta)){
-            
+
+            //Se establecen los valores de la consulta
             cs.setString(1, nombres.getText());
             cs.setString(2, apellidos.getText());
             
@@ -93,6 +104,7 @@ public class Usuarios {
 
         Clases.Conexion objetoConexion = new Clases.Conexion();
 
+        //Se crean las columnas de la tabla
         TableColumn<Object[], String> idColumn = new TableColumn<>("Id");
         TableColumn<Object[], String> nombresColumn = new TableColumn<>("Nombres");
         TableColumn<Object[], String> apellidosColumn = new TableColumn<>("Apellidos");
@@ -100,6 +112,7 @@ public class Usuarios {
         TableColumn<Object[], String> fechaNacColumn = new TableColumn<>("FNacimiento");
         TableColumn<Object[], String> sexoColumn = new TableColumn<>("Sexo");
 
+        //Asigna los datos que mostrara cada columna
         idColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[0].toString()));
         nombresColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[1].toString()));
         apellidosColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[2].toString()));
@@ -107,11 +120,14 @@ public class Usuarios {
         fechaNacColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[4].toString()));
         sexoColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()[5].toString()));
 
+        //Agrega las columnas a la tabla
         tablaTotalUsuarios.getColumns().addAll(idColumn, nombresColumn, apellidosColumn, correoColumn, fechaNacColumn, sexoColumn);
 
+        //Consulta SQL para obtener Datos
         String sql = "SELECT usuarios.id,usuarios.nombre,usuarios.apellidos,sexo.sexo,usuarios.correo,usuarios.fechaNac from usuarios inner join sexo on usuarios.fkSexo = sexo.id;";
         
         try {
+
             
             Statement st = objetoConexion.establecerConexion().createStatement();
             ResultSet rs = st.executeQuery(sql);
@@ -144,7 +160,7 @@ public class Usuarios {
         
     }
     
-    //Seleccionar los usuarios desde la tabla 
+    //Carga los datos del usuario seleccionado en el formulario
     public void seleccionarUsuario(TableView<Object[]> tablaTotalUsuarios, TextField id, TextField nombres, TextField apellidos, TextField correo, DatePicker nacimiento, ComboBox<String> comboSexo){
         
         int fila = tablaTotalUsuarios.getSelectionModel().getSelectedIndex();
@@ -165,7 +181,7 @@ public class Usuarios {
         
     }
     
-    //Modificar los usuarios desde javaFX
+    //Modificar los usuarios existente desde javaFX
     public void modificarUsuarios(TextField id,  TextField nombres, TextField apellidos, TextField correo, DatePicker nacimiento, ComboBox<String> comboSexo){
         Conexion objetoConexion = new Conexion();
         String consulta = "update usuarios set usuarios.nombre=?, usuarios.apellidos=?, usuarios.correo=?,  usuarios.fkSexo=?, usuarios.fechaNac=? where usuarios.id=?;";
@@ -197,7 +213,8 @@ public class Usuarios {
         }
         
     }
-    
+
+    //Elimina a los usuarios de la base de datos por su ID
     public void eliminarUsuario(TextField id){
         Conexion objetoConexion = new Conexion();
         
@@ -216,7 +233,8 @@ public class Usuarios {
             objetoConexion.cerrarConexion();
         }
     }
-    
+
+    //MOstrar un mensaje emergente
     private void mostrarAlerta(String tittle, String content){
         Alert alerta = new Alert(Alert.AlertType.INFORMATION);
         alerta.setTitle(tittle);
@@ -224,7 +242,8 @@ public class Usuarios {
         alerta.setContentText(content);
         alerta.showAndWait();
     }
-    
+
+    //Limpia todos los campos del formulario
     public void limpiarCampos (TextField id,  TextField nombres, TextField apellidos, TextField correo, DatePicker nacimiento, ComboBox<String> comboSexo){
         
         id.setText("");
