@@ -20,8 +20,4 @@ foreign key (fkSexo) references sexo(id) on DELETE CASCADE ON UPDATE CASCADE
 );
 
 
- /*SELECT usuarios.id,usuarios.nombre,usuarios.apellidos,sexo.sexo,usuarios.correo,usuarios.fechaNac
-from usuarios inner join sexo on usuarios.fkSexo = sexo.id;
-
-update usuarios set usuarios.nombre=?, usuarios.apellidos=?, usuarios.sexo=?, usuarios.correo=?, usuarios.fechaNac=? where usuarios.id=?;*/
 
